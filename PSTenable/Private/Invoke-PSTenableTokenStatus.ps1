@@ -1,17 +1,18 @@
-Function Invoke-PSTenableTokenRenewal {
+Function Invoke-PSTenableTokenCheck {
     <#
     .SYNOPSIS
-        Function that returns another token upon session expiration.
+        Function that returns whether the session token has expired.
     .DESCRIPTION
-        Function that returns another token upon session expiration.
+        Function that returns whether the session token has expired.
     .EXAMPLE
-        PS C:\> Invoke-PSTenableTokenRenewal
+        PS C:\> $TokenExpiry = Invoke-PStenableTokenCheck
+        PS C:\> if ($TokenExpiry -eq $True) {Invoke-PSTenableTokenRenewal} else {continue}
     .INPUTS
         None
     .OUTPUTS
-        None
+        $True or $False based on whether token is expired.
     .NOTES
-        This a private function dedicated to retreiving a new token for the user and storing it using PSFramework.
+        This a private function dedicated to checking if a token is expired.
     #>
     [CmdletBinding()]
     param (
@@ -34,11 +35,12 @@ Function Invoke-PSTenableTokenRenewal {
         ErrorAction     = "Stop"
     }
 
-    try {
-        $Session = Invoke-RestMethod @SessionSplat
-        Set-PSFconfig -FullName "PSTenable.Token" -Value $Session.response.token
-    } catch {
-        Write-PSFMessage -Level Warning -Message "Unable to execute Token Renewal." -ErrorRecord $_
+    $Session = Invoke-RestMethod @SessionSplat
+
+    if ($Session.response.releaseSession -eq $true) {
+        Write-Output $true
+    } else {
+        Write-Output $false
     }
 }
 
