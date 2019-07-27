@@ -29,13 +29,15 @@ function Get-PSTenablePlugin {
     )
 
     begin {
-        $TokenExpiry = Invoke-PSTenableTokenStatus
-        if ($TokenExpiry -eq $True) {Invoke-PSTenableTokenRenewal} else {continue}
+
     }
 
     process {
 
-        $output = foreach ($pluginID in $ID) {
+        $TokenExpiry = Invoke-PSTenableTokenStatus
+        if ($TokenExpiry -eq $True) {Invoke-PSTenableTokenRenewal} else {continue}
+
+        foreach ($pluginID in $ID) {
             $query = @{
                 "tool"       = "vulnipdetail"
                 "sortField"  = "cveID"
@@ -82,6 +84,6 @@ function Get-PSTenablePlugin {
     }
 
     end {
-        $Output
+
     }
 }

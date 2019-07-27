@@ -32,9 +32,6 @@ function Get-PSTenableSeverity {
 
     begin {
 
-        $TokenExpiry = Invoke-PSTenableTokenStatus
-        if ($TokenExpiry -eq $True) { Invoke-PSTenableTokenRenewal } else { continue }
-
         switch ($Severity) {
             "Critical" { $ID = "4" }
             "High" { $ID = "3" }
@@ -45,6 +42,9 @@ function Get-PSTenableSeverity {
     }
 
     process {
+
+        $TokenExpiry = Invoke-PSTenableTokenStatus
+        if ($TokenExpiry -eq $True) { Invoke-PSTenableTokenRenewal } else { continue }
 
         $query = @{
             "tool"       = "vulnipdetail"
@@ -84,9 +84,12 @@ function Get-PSTenableSeverity {
             Body     = $(ConvertTo-Json $query -depth 5)
             Endpoint = "/analysis"
         }
+
+        Invoke-PSTenableRest @Splat | Select-Object -ExpandProperty Response | Select-Object -ExpandProperty Results
+
     }
 
     end {
-        Invoke-PSTenableRest @Splat | Select-Object -ExpandProperty Response | Select-Object -ExpandProperty Results
+
     }
 }

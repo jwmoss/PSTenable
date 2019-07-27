@@ -35,10 +35,20 @@ function Invoke-PSTenableRest {
     )
 
     Begin {
-        if ($(Get-PSFConfigValue -FullName 'PSTenable.Server') -notmatch "https") {
-            # Disable SSL certificate validation.
-            [System.Net.ServicePointManager]::ServerCertificateValidationCallback = { $true }
+
+        ## Enable TLS 1.2
+        ## Taken from https://github.com/potatoqualitee/kbupdate/blob/master/kbupdate.psm1
+        $currentProgressPref = $ProgressPreference
+        $ProgressPreference = "SilentlyContinue"
+        $currentVersionTls = [Net.ServicePointManager]::SecurityProtocol
+        $currentSupportableTls = [Math]::Max($currentVersionTls.value__, [Net.SecurityProtocolType]::Tls.value__)
+        $availableTls = [enum]::GetValues('Net.SecurityProtocolType') | Where-Object { $_ -gt $currentSupportableTls }
+        $availableTls | ForEach-Object {
+            [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor $_
         }
+    }
+
+    Process {
 
         $RestMethodParams = @{
             URI         = $(Get-PSFConfigValue -FullName 'PSTenable.Server') + $Endpoint
@@ -51,19 +61,6 @@ function Invoke-PSTenableRest {
 
         if ($PSBoundParameters.ContainsKey('Body')) {
             $RestMethodParams.Add('Body', $Body)
-        }
-    }
-
-    Process {
-        ## Enable TLS 1.2
-        ## Taken from https://github.com/potatoqualitee/kbupdate/blob/master/kbupdate.psm1
-        $currentProgressPref = $ProgressPreference
-        $ProgressPreference = "SilentlyContinue"
-        $currentVersionTls = [Net.ServicePointManager]::SecurityProtocol
-        $currentSupportableTls = [Math]::Max($currentVersionTls.value__, [Net.SecurityProtocolType]::Tls.value__)
-        $availableTls = [enum]::GetValues('Net.SecurityProtocolType') | Where-Object { $_ -gt $currentSupportableTls }
-        $availableTls | ForEach-Object {
-            [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor $_
         }
 
         Invoke-RestMethod @RestMethodParams

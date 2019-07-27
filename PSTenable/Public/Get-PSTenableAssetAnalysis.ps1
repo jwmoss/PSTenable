@@ -20,16 +20,18 @@ function Get-PSTenableAssetAnalysis {
     param (
         [String]
         [Parameter(Position = 0, Mandatory = $true)]
-        [string]
+        [PSFComputer]
         $ComputerName
     )
 
     begin {
-        $TokenExpiry = Invoke-PSTenableTokenStatus
-        if ($TokenExpiry -eq $True) {Invoke-PSTenableTokenRenewal} else {continue}
+
     }
 
     process {
+
+        $TokenExpiry = Invoke-PSTenableTokenStatus
+        if ($TokenExpiry -eq $True) {Invoke-PSTenableTokenRenewal} else {continue}
 
         $query = @{
             "tool"       = "vulnipdetail"
@@ -70,9 +72,11 @@ function Get-PSTenableAssetAnalysis {
             Endpoint = "/analysis"
         }
 
+        Invoke-PSTenableRest @Splat | Select-Object -ExpandProperty Response | Select-Object -ExpandProperty Results
+
     }
 
     end {
-        Invoke-PSTenableRest @Splat | Select-Object -ExpandProperty Response | Select-Object -ExpandProperty Results
+
     }
 }

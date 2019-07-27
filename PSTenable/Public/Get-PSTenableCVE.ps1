@@ -24,16 +24,18 @@ function Get-PSTenableCVE {
         [parameter(Position = 0,
             mandatory = $true,
             ValueFromPipeline = $true)]
-        [string]
+        [string[]]
         $CVE
     )
 
     begin {
-        $TokenExpiry = Invoke-PSTenableTokenStatus
-        if ($TokenExpiry -eq $True) {Invoke-PSTenableTokenRenewal} else {continue}
+
     }
 
     process {
+
+        $TokenExpiry = Invoke-PSTenableTokenStatus
+        if ($TokenExpiry -eq $True) { Invoke-PSTenableTokenRenewal } else { continue }
 
         $output = foreach ($item in $CVE) {
             $query = @{
@@ -73,14 +75,13 @@ function Get-PSTenableCVE {
 
         }
 
-        ## Get the pluginID and then call Get-TenablePlugin, and then output those results
-        $Results = Foreach ($Plugin in $output.response.results.pluginid) {
+        ## Get the pluginID and then call Get-TenablePlugin, and then output those result
+        Foreach ($Plugin in $output.response.results.pluginid) {
             Get-PSTenablePlugin -ID $Plugin
         }
-
     }
 
     end {
-        $Results
+
     }
 }

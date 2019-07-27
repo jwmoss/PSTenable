@@ -22,19 +22,20 @@ function Get-PSTenablePluginFamilyWindows {
     )
 
     begin {
-        $TokenExpiry = Invoke-PSTenableTokenStatus
-        if ($TokenExpiry -eq $True) {Invoke-PSTenableTokenRenewal} else {continue}
-    }
-
-    process {
 
         $WindowsPlugins = @(
             '20',
             '10',
             '29'
         )
+    }
 
-        $Output = Foreach ($plugin in $WindowsPlugins) {
+    process {
+
+        $TokenExpiry = Invoke-PSTenableTokenStatus
+        if ($TokenExpiry -eq $True) {Invoke-PSTenableTokenRenewal} else {continue}
+
+        Foreach ($plugin in $WindowsPlugins) {
 
             $query = @{
                 "tool"       = "vulnipdetail"
@@ -82,6 +83,6 @@ function Get-PSTenablePluginFamilyWindows {
     }
 
     end {
-        $output
+
     }
 }

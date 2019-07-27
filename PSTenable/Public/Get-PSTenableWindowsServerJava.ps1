@@ -20,11 +20,14 @@ function Get-PSTenableWindowsServerJava {
     )
 
     Begin {
-        $TokenExpiry = Invoke-PSTenableTokenStatus
-        if ($TokenExpiry -eq $True) { Invoke-PSTenableTokenRenewal } else { continue }
+
     }
 
     process {
+
+        $TokenExpiry = Invoke-PSTenableTokenStatus
+        if ($TokenExpiry -eq $True) { Invoke-PSTenableTokenRenewal } else { continue }
+
         $query = @{
             "query"      = @{
                 "name"          = ""
@@ -80,15 +83,18 @@ function Get-PSTenableWindowsServerJava {
             "type"       = "vuln"
             "columns"    = "[]"
         }
+
         $Splat = @{
             Method   = "Post"
             Body     = $(ConvertTo-Json $query -depth 50)
             Endpoint = "/analysis"
         }
+
+        Invoke-PSTenableRest @Splat | Select-Object -ExpandProperty Response | Select-Object -ExpandProperty Results
+
     }
 
     End {
-        Invoke-PSTenableRest @Splat | Select-Object -ExpandProperty Response | Select-Object -ExpandProperty Results
 
     }
 }
