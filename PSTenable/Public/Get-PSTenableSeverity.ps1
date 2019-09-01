@@ -84,9 +84,11 @@ function Get-PSTenableSeverity {
             Body     = $(ConvertTo-Json $query -depth 5)
             Endpoint = "/analysis"
         }
+
+        Invoke-PSTenableRest @Splat | Select-Object -ExpandProperty Response | Select-Object -ExpandProperty Results
+
     }
 
     end {
-        Invoke-PSTenableRest @Splat | Select-Object -ExpandProperty Response | Select-Object -ExpandProperty Results
     }
 }

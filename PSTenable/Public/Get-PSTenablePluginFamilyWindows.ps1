@@ -34,7 +34,7 @@ function Get-PSTenablePluginFamilyWindows {
             '29'
         )
 
-        $Output = Foreach ($plugin in $WindowsPlugins) {
+        Foreach ($plugin in $WindowsPlugins) {
 
             $query = @{
                 "tool"       = "vulnipdetail"
@@ -82,6 +82,6 @@ function Get-PSTenablePluginFamilyWindows {
     }
 
     end {
-        $output
+
     }
 }

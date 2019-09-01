@@ -82,7 +82,7 @@ function Connect-PSTenable {
         Set-PSFConfig -FullName "PSTenable.Server" -Value $TenableServer
         Set-PSFconfig -FullName "PSTenable.Credential" -Value $Credential
 
-        if ($PSBoundParameters.ContainsKey('Register')) {
+        if ($Register -eq $true) {
             Register-PSFConfig -FullName "PSTenable.WebSession"
             Register-PSFConfig -FullName "PSTenable.Token"
             Register-PSFConfig -FullName "PSTenable.Server"

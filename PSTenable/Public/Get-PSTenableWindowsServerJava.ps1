@@ -85,10 +85,12 @@ function Get-PSTenableWindowsServerJava {
             Body     = $(ConvertTo-Json $query -depth 50)
             Endpoint = "/analysis"
         }
+
+        Invoke-PSTenableRest @Splat | Select-Object -ExpandProperty Response | Select-Object -ExpandProperty Results
+
     }
 
     End {
-        Invoke-PSTenableRest @Splat | Select-Object -ExpandProperty Response | Select-Object -ExpandProperty Results
 
     }
 }

@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.2.3] 2019-09-01
+
+- Code cleanup [#9](https://github.com/jwmoss/PSTenable/issues/9)
+
 ## [0.2.2] 2019-07-13
 
 - Fixed automatically retrieving token.

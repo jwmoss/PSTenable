@@ -18,9 +18,8 @@ function Get-PSTenableAssetAnalysis {
     #>
     [CmdletBinding()]
     param (
-        [String]
         [Parameter(Position = 0, Mandatory = $true)]
-        [string]
+        [PSFComputer]
         $ComputerName
     )
 

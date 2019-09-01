@@ -24,7 +24,7 @@ function Get-PSTenableCVE {
         [parameter(Position = 0,
             mandatory = $true,
             ValueFromPipeline = $true)]
-        [string]
+        [string[]]
         $CVE
     )
 
@@ -74,13 +74,13 @@ function Get-PSTenableCVE {
         }
 
         ## Get the pluginID and then call Get-TenablePlugin, and then output those results
-        $Results = Foreach ($Plugin in $output.response.results.pluginid) {
+        Foreach ($Plugin in $output.response.results.pluginid) {
             Get-PSTenablePlugin -ID $Plugin
         }
 
     }
 
     end {
-        $Results
+
     }
 }
