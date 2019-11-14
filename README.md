@@ -24,7 +24,7 @@ Install-Module -Name PSTenable -Scope CurrentUser -Repository PSGallery
 ```powershell
 ## Cache credentials, tenable server, web session, and token.
 $Credential = Get-Credential
-Connect-PSTenable -Credential $Credential -TenableServer "server.domain.com/rest" -Register
+Connect-PSTenable -Credential $Credential -TenableServer "http(s)://server.domain.com/rest" -Register
 
 ## Get all devices affected by CVE-2019-0708
 Get-PSTenableCVE -CVE "CVE-2019-0708"
