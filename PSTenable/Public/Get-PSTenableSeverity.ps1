@@ -50,11 +50,8 @@ function Get-PSTenableSeverity {
     }
 
     process {
-
         $APIresults = @()
         $CurrentStartOffset = 0
-        
-
 
         Do {
             #we're gonna paginate at 5000 rows
@@ -64,42 +61,29 @@ function Get-PSTenableSeverity {
                 $CurrentEndOffset = ($CurrentStartOffset + 4999)
             }
             Write-verbose "Querying SC for results: $CurrentStartOffset to $CurrentEndOffset" 
-            $query = @{
-                "tool"       = "vulnipdetail"
-                "sortField"  = "cveID"
-                "sortDir"    = "ASC"
+
+            $PreJSON = @{
                 "type"       = "vuln"
                 "sourceType" = "cumulative"
                 "query"      = @{
-                    "name"         = ""
-                    "description"  = ""
-                    "context"      = ""
-                    "status"       = "-1"
-                    "createdTime"  = 0
-                    "modifiedtime" = 0
-                    "sourceType"   = "cumulative"
-                    "sortDir"      = "desc"
-                    "tool"         = "listvuln"
-                    "groups"       = "[]"
                     "type"         = "vuln"
+                    "sortField"    = "severity"
+                    "sortDir"      = "DESC"
                     "startOffset"  = $CurrentStartOffset
                     "endOffset"    = $CurrentEndOffset
+                    "tool"         = "vulndetails"
                     "filters"      = [array]@{
-                        "id"           = "severity"
                         "filterName"   = "severity"
                         "operator"     = "="
-                        "type"         = "vuln"
-                        "ispredefined" = $true
                         "value"        = "$ID"
                     }
-                    "vulntool"     = "listvuln"
-                    "sortField"    = "severity"
+
                 }
             }
 
             $Splat = @{
                 Method   = "Post"
-                Body     = $(ConvertTo-Json $query -depth 5)
+                Body     = $(ConvertTo-Json $PreJSON -depth 5)
                 Endpoint = "/analysis"
             }
 
@@ -108,11 +92,9 @@ function Get-PSTenableSeverity {
                 $APIresults += $Thisresults
                 #move pagination line
                 $CurrentStartOffset = $CurrentEndOffset + 1
-            } 
+            }
         } While ($ThisResults)
-        
-        $ApiResults 
-
+        $ApiResults
 
     }
 
