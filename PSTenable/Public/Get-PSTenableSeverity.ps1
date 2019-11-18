@@ -10,10 +10,10 @@ function Get-PSTenableSeverity {
     .INPUTS
         None
     .PARAMETER Severity
-        Option for any of "Critical", "High", "Medium", "Low", "Al"l, "All with Info". Defaults to "Critical","High".  All with Info will get ALL vuln data
+        Option for any of "Critical", "High", "Medium", "Low", "All", "All with Info". Defaults to "Critical","High".  All with Info will get ALL vuln data
     .PARAMETER MaxRecords
         Option for maximum records (rows of data) that should be requested (as a throttle), Default is 0 (all records) [note: sorted by score, descending]
-    .PARAMETER Detail
+    .PARAMETER Detailed
         Option to enable detailed data. Defaults to Summary Data. To determine how detailed the resulting data is by querying Tenable.sc "Vulnerability Summary" versus "Vulnerability Detail"
     .OUTPUTS
         PSCustomObject
@@ -62,7 +62,7 @@ function Get-PSTenableSeverity {
         $TokenExpiry = Invoke-PSTenableTokenStatus
         if ($TokenExpiry -eq $True) {Invoke-PSTenableTokenRenewal}
 
-        if (!($Severity)) {
+        if (-not $Severity) {
             $ID = @("4","3") #Magic Numbers for Critical & High
         } elseif ($Severity -contains "All with Info") {
             $ID = @("4","3","2","1","0") #all but info
@@ -85,7 +85,7 @@ function Get-PSTenableSeverity {
         $APIresults = @()
         $CurrentStartOffset = 0
 
-        $ID | % { #because of lack of useful sorting data (scores, time) within a severity, especially in summary data... we are going to query severities in order
+        $ID | ForEach-Object { #because of lack of useful sorting data (scores, time) within a severity in summary data... we are going to query severities in order
             $Sev = $_
 
             Do {
@@ -94,7 +94,6 @@ function Get-PSTenableSeverity {
                 } else {
                     $CurrentEndOffset = ($CurrentStartOffset + 2147483647)
                 }
-                Write-verbose "Querying SC for results: $CurrentStartOffset to $CurrentEndOffset" 
 
                 $PreJSON = @{
                     "type"       = "vuln"
