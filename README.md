@@ -34,4 +34,10 @@ Get-PSTenablePlugin -ID "125877"
 
 ## Get all vulnerabilities related to patch family Windows, Windows : Microsoft Bulletins, and Windows : User management
 Get-PSTenablePluginFamilyWindows
+
+## Retrieves all non-info vulnerabilities, Detailed data
+Get-PSTenableSeverity -Severity "All" -Detailed
+
+## Retrieves high and medium vulnerabilities, up to 200 records, Summary Data
+Get-PSTenableSeverity -Severity "High","Medium" -Maxrecords 200
 ```
