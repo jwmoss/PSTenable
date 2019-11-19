@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.2.4] 2019-11-18
+
+- Add pagination support, add support for more than 5000 records, and code cleanup for Get-PSTenableSeverity. Thanks [@AaronG1234](https://github.com/AaronG1234)! [#12](https://github.com/jwmoss/PSTenable/issues/12)
+
 ## [0.2.3] 2019-09-01
 
 - Code cleanup [#9](https://github.com/jwmoss/PSTenable/issues/9)
