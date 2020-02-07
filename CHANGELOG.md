@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.2.5] 2020-02-07
+
+- Add switch option to Get-PSTenablePlugin for returning the plugin output.
+
 ## [0.2.4] 2019-11-18
 
 - Add pagination support, add support for more than 5000 records, and code cleanup for Get-PSTenableSeverity. Thanks [@AaronG1234](https://github.com/AaronG1234)! [#12](https://github.com/jwmoss/PSTenable/issues/12)
