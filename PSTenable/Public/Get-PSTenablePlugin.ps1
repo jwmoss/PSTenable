@@ -6,12 +6,17 @@ function Get-PSTenablePlugin {
         This function provides a way to retrieve all devices affected by a specific PluginID that is passed to the function.
     .EXAMPLE
         PS C:\> Get-PSTenablePlugin -ID "20007"
-        This passes PluginID 20007 CVE's to the fucntion and returns and all devices affected by the PluginID 20007.
+        This passes PluginID 20007 CVE's to the function and returns and all devices affected by the PluginID 20007.
+
+        PS C:\> Get-PSTenablePlugin -ID "20007" -PluginOutput
+        This passes PluginID 20007 CVE's to the function and returns and all devices affected by the PluginID 20007, along with the plugin output.
 
         PS C:\> @("20007","31705")  Get-PSTenablePlugin
-        This passes PluginID 20007 CVE's to the fucntion and returns and all devices affected by the PluginID 20007.
+        This passes PluginID 20007 CVE's to the function and returns and all devices affected by the PluginID 20007.
     .PARAMETER ID
         PluginID from Tenable
+    .PARAMETER PluginOutput
+        Switch that changes output type to include plugin output
     .INPUTS
         None
     .OUTPUTS
@@ -21,11 +26,12 @@ function Get-PSTenablePlugin {
     #>
     [CmdletBinding()]
     param (
-        [parameter(Position = 0,
-            mandatory = $true,
-            ValueFromPipeline = $true)]
+        [parameter(Position = 0, mandatory = $true, ValueFromPipeline = $true)]
         [string]
-        $ID
+        $ID,
+
+        [switch]
+        $PluginOutput
     )
 
     begin {
@@ -35,7 +41,19 @@ function Get-PSTenablePlugin {
 
     process {
 
-        $output = foreach ($pluginID in $ID) {
+        $pluginID | ForEach-Object {
+
+        }
+
+        foreach ($pluginID in $ID) {
+
+            if ($PSBoundParameters.ContainsKey('PluginOutput')) {
+                $tool = "vulndetails"
+            }
+            else {
+                $tool = "listvuln"
+            }
+
             $query = @{
                 "tool"       = "vulnipdetail"
                 "sortField"  = "cveID"
@@ -51,7 +69,7 @@ function Get-PSTenablePlugin {
                     "modifiedtime" = 0
                     "sourceType"   = "cumulative"
                     "sortDir"      = "desc"
-                    "tool"         = "listvuln"
+                    "tool"         = "$tool"
                     "groups"       = "[]"
                     "type"         = "vuln"
                     "startOffset"  = 0
@@ -75,13 +93,13 @@ function Get-PSTenablePlugin {
                 Endpoint = "/analysis"
             }
 
-            Invoke-PSTenableRest @Splat | Select-Object -ExpandProperty Response | Select-Object -ExpandProperty Results
+            (Invoke-PSTenableRest @Splat).Response.Results
 
         }
 
     }
 
     end {
-        $Output
+
     }
 }
