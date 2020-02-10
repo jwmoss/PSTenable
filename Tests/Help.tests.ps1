@@ -38,11 +38,6 @@ foreach ($command in $commands) {
             ($help.Examples.Example | Select-Object -First 1).Code | Should Not BeNullOrEmpty
         }
 
-        # Should be at least one example description
-        It "gets example help from $commandName" {
-            ($help.Examples.Example.Remarks | Select-Object -First 1).Text | Should Not BeNullOrEmpty
-        }
-
         Context "Test parameter help for $commandName" {
 
             $common = 'Debug', 'ErrorAction', 'ErrorVariable', 'InformationAction', 'InformationVariable', 'OutBuffer',

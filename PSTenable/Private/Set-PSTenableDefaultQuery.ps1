@@ -1,4 +1,6 @@
 function Set-PSTenableDefaultQuery {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "")]
+    [OutputType('System.Collections.Specialized.OrderedDictionary')]
     [CmdletBinding()]
     param (
         [Parameter(Mandatory)]

@@ -27,9 +27,6 @@ This function provides a way to retrieve all devices affected by a CVE that is p
 This passes an array of CVE's to the fucntion and returns and all devices affected by the CVEs.
 ```
 
-PS C:\\\> Get-PSTenableCVE -CVE "CVE-2019-0708"
-This returns all devices affected by CVE-2019-0708
-
 ## PARAMETERS
 
 ### -CVE
