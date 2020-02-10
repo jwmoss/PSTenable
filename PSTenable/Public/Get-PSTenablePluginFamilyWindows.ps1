@@ -10,6 +10,8 @@ function Get-PSTenablePluginFamilyWindows {
     .EXAMPLE
         PS C:\> Get-PSTenablePluginFamilyWindows
         Retrieves all vulnerabilities related to the windows patch families.
+    .PARAMETER Tool
+        The vulnerability tool to chose. Defaults to vulnipdetails.
     .INPUTS
         None
     .OUTPUTS
@@ -19,6 +21,13 @@ function Get-PSTenablePluginFamilyWindows {
     #>
     [CmdletBinding()]
     param (
+        [Parameter()]
+        [ValidateSet(
+            "vulnipdetails",
+            "listvuln"
+        )]
+        [string]
+        $Tool = "vulnipdetails"
     )
 
     begin {
@@ -34,41 +43,36 @@ function Get-PSTenablePluginFamilyWindows {
             '29'
         )
 
-        Foreach ($plugin in $WindowsPlugins) {
+        $WindowsPlugins | Foreach-Object {
 
-            $query = @{
-                "tool"       = "vulnipdetail"
-                "sortField"  = "cveID"
-                "sortDir"    = "ASC"
-                "type"       = "vuln"
-                "vulntool"   = "listvuln"
-                "sourceType" = "cumulative"
-                "query"      = @{
-                    "name"         = ""
-                    "description"  = ""
-                    "context"      = ""
-                    "status"       = "-1"
-                    "createdTime"  = 0
-                    "modifiedtime" = 0
-                    "sourceType"   = "cumulative"
-                    "sortDir"      = "desc"
-                    "tool"         = "listvuln"
-                    "groups"       = "[]"
-                    "type"         = "vuln"
-                    "startOffset"  = 0
-                    "endOffset"    = 5000
-                    "ispredefined" = $true
-                    "filters"      = [array]@{
-                        "id"           = "familyID"
-                        "filterName"   = "familyID"
-                        "operator"     = "="
-                        "type"         = "vuln"
-                        "ispredefined" = $true
-                        "value"        = "$plugin"
-                    }
-                    "sortField"    = "severity"
+            $Query = Set-PSTenableDefaultQuery -Tool $Tool
+
+            $Query.Add("query",@{
+                name         = ""
+                description  = ""
+                context      = ""
+                status       = "-1"
+                createdTime  = 0
+                modifiedtime = 0
+                sourceType   = "cumulative"
+                sortDir      = "desc"
+                tool         = $Tool
+                groups       = "[]"
+                type         = "vuln"
+                startOffset  = 0
+                endOffset    = 5000
+                ispredefined = $true
+                filters      = [array]@{
+                    id           = "familyID"
+                    filterName   = "familyID"
+                    operator     = "="
+                    type         = "vuln"
+                    ispredefined = $true
+                    value        = $_
                 }
-            }
+                sortField    = "severity"
+                }
+            )
 
             $Splat = @{
                 Method   = "Post"
@@ -76,9 +80,10 @@ function Get-PSTenablePluginFamilyWindows {
                 Endpoint = "/analysis"
             }
 
-            Invoke-PSTenableRest @Splat | Select-Object -ExpandProperty Response | Select-Object -ExpandProperty Results
+            (Invoke-PSTenableRest @Splat).Response.Results
 
         }
+
     }
 
     end {

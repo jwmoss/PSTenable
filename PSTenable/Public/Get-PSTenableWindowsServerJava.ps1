@@ -80,13 +80,14 @@ function Get-PSTenableWindowsServerJava {
             "type"       = "vuln"
             "columns"    = "[]"
         }
+
         $Splat = @{
             Method   = "Post"
             Body     = $(ConvertTo-Json $query -depth 50)
             Endpoint = "/analysis"
         }
 
-        Invoke-PSTenableRest @Splat | Select-Object -ExpandProperty Response | Select-Object -ExpandProperty Results
+        (Invoke-PSTenableRest @Splat).Response.Results
 
     }
 

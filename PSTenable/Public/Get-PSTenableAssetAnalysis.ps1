@@ -5,10 +5,12 @@ function Get-PSTenableAssetAnalysis {
     .DESCRIPTION
         This function provides a way to retreive all vulnerabilities associated with a scanned device in Tenable.
     .EXAMPLE
-        PS C:\> Get-PSTenableAssetAnalysis -ComputerName "server.fqdn.com"
+        PS C:\> Get-PSTenableAssetAnalysis -ComputerName "server.fqdn.com" -Tool "vulnipdetails"
         This retreives all vulnerabilities reported by Tenable from computername server.fqdn.com
     .PARAMETER ComputerName
         Computername in Tenable that you're searching for
+    .PARAMETER Tool
+        The vulnerability tool to chose. Defaults to vulnipdetails.
     .INPUTS
         None
     .OUTPUTS
@@ -20,7 +22,14 @@ function Get-PSTenableAssetAnalysis {
     param (
         [Parameter(Position = 0, Mandatory = $true)]
         [PSFComputer]
-        $ComputerName
+        $ComputerName,
+
+        [ValidateSet(
+            "vulnipdetails",
+            "listvuln"
+        )]
+        [string]
+        $Tool = "vulnipdetails"
     )
 
     begin {
@@ -30,38 +39,34 @@ function Get-PSTenableAssetAnalysis {
 
     process {
 
-        $query = @{
-            "tool"       = "vulnipdetail"
-            "sortField"  = "cveID"
-            "sortDir"    = "ASC"
-            "type"       = "vuln"
-            "sourceType" = "cumulative"
-            "query"      = @{
-                "name"         = ""
-                "description"  = ""
-                "context"      = ""
-                "status"       = "-1"
-                "createdTime"  = 0
-                "modifiedtime" = 0
-                "sourceType"   = "cumulative"
-                "sortDir"      = "desc"
-                "tool"         = "listvuln"
-                "groups"       = "[]"
-                "type"         = "vuln"
-                "startOffset"  = 0
-                "endOffset"    = 5000
-                "filters"      = [array]@{
-                    "id"           = "dnsName"
-                    "filterName"   = "dnsName"
-                    "operator"     = "="
-                    "type"         = "vuln"
-                    "ispredefined" = $true
-                    "value"        = "$ComputerName"
-                }
-                "vulntool"     = "listvuln"
-                "sortField"    = "severity"
+        $Query = Set-PSTenableDefaultQuery -Tool $Tool
+
+        $Query.Add("query",@{
+            name         = ""
+            description  = ""
+            context      = ""
+            status       = "-1"
+            createdTime  = 0
+            modifiedtime = 0
+            sourceType   = "cumulative"
+            sortDir      = "desc"
+            tool         = $Tool
+            groups       = "[]"
+            type         = "vuln"
+            startOffset  = 0
+            endOffset    = 5000
+            filters      = [array]@{
+                id           = "dnsName"
+                filterName   = "dnsName"
+                operator     = "="
+                type         = "vuln"
+                ispredefined = $true
+                value        = $ComputerName
             }
-        }
+            vulntool     = $Tool
+            sortField    = "severity"
+            }
+        )
 
         $Splat = @{
             Method   = "Post"
@@ -72,6 +77,6 @@ function Get-PSTenableAssetAnalysis {
     }
 
     end {
-        Invoke-PSTenableRest @Splat | Select-Object -ExpandProperty Response | Select-Object -ExpandProperty Results
+        (Invoke-PSTenableRest @Splat).Response.Results
     }
 }

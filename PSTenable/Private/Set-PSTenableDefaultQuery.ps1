@@ -1,4 +1,4 @@
-function Set-PSTenableQuery {
+function Set-PSTenableDefaultQuery {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory)]

@@ -12,6 +12,8 @@ function Get-PSTenableCVE {
         This returns all devices affected by CVE-2019-0708
     .PARAMETER CVE
         CVE Number, such as CVE-2019-0708
+    .PARAMETER Tool
+        The vulnerability tool to chose. Defaults to vulnipdetails.
     .INPUTS
         None
     .OUTPUTS
@@ -21,11 +23,16 @@ function Get-PSTenableCVE {
     #>
     [CmdletBinding()]
     param (
-        [parameter(Position = 0,
-            mandatory = $true,
-            ValueFromPipeline = $true)]
+        [parameter(Position = 0,mandatory = $true,ValueFromPipeline = $true)]
         [string[]]
-        $CVE
+        $CVE,
+
+        [ValidateSet(
+            "vulnipdetails",
+            "listvuln"
+        )]
+        [string]
+        $Tool = "vulnipdetails"
     )
 
     begin {
@@ -34,34 +41,30 @@ function Get-PSTenableCVE {
     }
 
     process {
+        $CVE | Foreach-object {
 
-        $output = foreach ($item in $CVE) {
-            $query = @{
-                "tool"       = "vulnipdetail";
-                "sortField"  = "cveID";
-                "sortDir"    = "ASC";
-                "type"       = "vuln";
-                "sourceType" = "cumulative";
-                "query"      = @{
-                    "createdTime"  = 0;
-                    "sourceType"   = "cumulative";
-                    "sortDir"      = "desc";
-                    "tool"         = "vulnipdetail";
-                    "modifiedTime" = 0;
-                    "name"         = "";
-                    "type"         = "vuln";
-                    "filters"      = [array]@{
-                        "operator"   = "=";
-                        "value"      = $item;
-                        "filterName" = "cveID"
-                    };
-                    "description"  = "";
-                    "sortField"    = "severity";
-                    "startOffset"  = 0;
-                    "context"      = "";
-                    "endOffset"    = 5000
+            $Query = Set-PSTenableDefaultQuery -Tool $Tool
+
+            $Query.Add("query",@{
+                    createdTime  = 0;
+                    sourceType   = "cumulative";
+                    sortDir      = "desc";
+                    tool         = "vulnipdetail";
+                    modifiedTime = 0;
+                    name         = "";
+                    type         = "vuln";
+                    filters      = [array]@{
+                        operator   = "=";
+                        value      = $_
+                        filterName = "cveID"
+                    }
+                    description  = "";
+                    sortField    = "severity";
+                    startOffset  = 0;
+                    context      = "";
+                    endOffset    = 5000
                 }
-            }
+            )
 
             $Splat = @{
                 Method   = "Post"
@@ -69,15 +72,8 @@ function Get-PSTenableCVE {
                 Endpoint = "/analysis"
             }
 
-            Invoke-PSTenableRest @Splat | Select-Object -ExpandProperty Response | Select-Object -ExpandProperty Results
-
+            Get-PSTenablePlugin -ID $Plugin -ID (Invoke-PSTenableRest @Splat).Response.Results.pluginID
         }
-
-        ## Get the pluginID and then call Get-TenablePlugin, and then output those results
-        Foreach ($Plugin in $output.response.results.pluginid) {
-            Get-PSTenablePlugin -ID $Plugin
-        }
-
     }
 
     end {

@@ -24,9 +24,8 @@ This function provides a way to retrieves all devices that are have an old versi
 ### EXAMPLE 1
 ```
 Get-PSTenableWindowsServerJava
-```
-
 This retrieves Java vulnerabilities that are high or critical for Windows hosts.
+```
 
 ## PARAMETERS
 

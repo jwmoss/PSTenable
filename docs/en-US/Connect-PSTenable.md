@@ -24,17 +24,15 @@ tenable server that is used within PSTenable.
 
 ### EXAMPLE 1
 ```
-PS C:\> $Cred = Get-Credential
-PS C:\> Connect-PSTenable -Credential $Cred -TenableServer "tenable.domain.com/rest" -Register
-```
-
+Connect-PSTenable -Credential $Cred -TenableServer "tenable.domain.com/rest" -Register
 This prompts for user credentials, and then, using Connect-PSTenable, sets the credentials,
 token, web session, and the Tenable Server using PSFramework.
+```
 
 ## PARAMETERS
 
 ### -Credential
-{{ Fill Credential Description }}
+PSCredential Object
 
 ```yaml
 Type: PSCredential
@@ -49,7 +47,7 @@ Accept wildcard characters: False
 ```
 
 ### -TenableServer
-{{ Fill TenableServer Description }}
+Tenable Server Name, tenable.domain.com/rest
 
 ```yaml
 Type: String
@@ -64,7 +62,7 @@ Accept wildcard characters: False
 ```
 
 ### -Register
-{{ Fill Register Description }}
+If specified, this will cache the Credential, TenableServer, Token, and Web Session.
 
 ```yaml
 Type: SwitchParameter

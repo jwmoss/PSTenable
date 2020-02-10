@@ -15,6 +15,8 @@ function Get-PSTenablePlugin {
         This passes PluginID 20007 CVE's to the function and returns and all devices affected by the PluginID 20007.
     .PARAMETER ID
         PluginID from Tenable
+    .PARAMETER Tool
+        The vulnerability tool to chose. Defaults to vulnipdetails.
     .PARAMETER PluginOutput
         Switch that changes output type to include plugin output
     .INPUTS
@@ -30,6 +32,13 @@ function Get-PSTenablePlugin {
         [string]
         $ID,
 
+        [ValidateSet(
+            "vulnipdetails",
+            "listvuln"
+        )]
+        [string]
+        $Tool = "vulnipdetails",
+
         [switch]
         $PluginOutput
     )
@@ -43,49 +52,34 @@ function Get-PSTenablePlugin {
 
         $pluginID | ForEach-Object {
 
-        }
+            $Query = Set-PSTenableDefaultQuery -Tool $Tool
 
-        foreach ($pluginID in $ID) {
-
-            if ($PSBoundParameters.ContainsKey('PluginOutput')) {
-                $tool = "vulndetails"
-            }
-            else {
-                $tool = "listvuln"
-            }
-
-            $query = @{
-                "tool"       = "vulnipdetail"
-                "sortField"  = "cveID"
-                "sortDir"    = "ASC"
-                "type"       = "vuln"
-                "sourceType" = "cumulative"
-                "query"      = @{
-                    "name"         = ""
-                    "description"  = ""
-                    "context"      = ""
-                    "status"       = "-1"
-                    "createdTime"  = 0
-                    "modifiedtime" = 0
-                    "sourceType"   = "cumulative"
-                    "sortDir"      = "desc"
-                    "tool"         = "$tool"
-                    "groups"       = "[]"
-                    "type"         = "vuln"
-                    "startOffset"  = 0
-                    "endOffset"    = 5000
-                    "filters"      = [array]@{
-                        "id"           = "pluginID"
-                        "filterName"   = "pluginID"
-                        "operator"     = "="
-                        "type"         = "vuln"
-                        "ispredefined" = $true
-                        "value"        = "$pluginID"
+            $Query.Add("query",@{
+                    name         = ""
+                    description  = ""
+                    context      = ""
+                    status       = "-1"
+                    createdTime  = 0
+                    modifiedtime = 0
+                    sourceType   = "cumulative"
+                    sortDir      = "desc"
+                    tool         = $tool
+                    groups       = "[]"
+                    type         = "vuln"
+                    startOffset  = 0
+                    endOffset    = 5000
+                    filters      = [array]@{
+                        id           = "pluginID"
+                        filterName   = "pluginID"
+                        operator     = "="
+                        type         = "vuln"
+                        ispredefined = $true
+                        value        = $_
                     }
-                    "vulntool"     = "listvuln"
-                    "sortField"    = "severity"
+                    vulntool     = $tool
+                    sortField    = "severity"
                 }
-            }
+            )
 
             $Splat = @{
                 Method   = "Post"
@@ -94,7 +88,6 @@ function Get-PSTenablePlugin {
             }
 
             (Invoke-PSTenableRest @Splat).Response.Results
-
         }
 
     }

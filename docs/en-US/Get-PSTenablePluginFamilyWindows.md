@@ -13,7 +13,7 @@ Retrieves all vulnerabilities related to the "Windows" patch family.
 ## SYNTAX
 
 ```
-Get-PSTenablePluginFamilyWindows [<CommonParameters>]
+Get-PSTenablePluginFamilyWindows [[-Tool] <String>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -30,11 +30,26 @@ Windows : User management
 ### EXAMPLE 1
 ```
 Get-PSTenablePluginFamilyWindows
+Retrieves all vulnerabilities related to the windows patch families.
 ```
 
-Retrieves all vulnerabilities related to the windows patch families.
-
 ## PARAMETERS
+
+### -Tool
+The vulnerability tool to chose.
+Defaults to vulnipdetails.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 1
+Default value: Vulnipdetails
+Accept pipeline input: False
+Accept wildcard characters: False
+```
 
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
